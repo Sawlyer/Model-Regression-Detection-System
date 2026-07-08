@@ -64,7 +64,11 @@ class MockProvider:
         if "evaluator" in system.lower():
             return LLMResponse(text="4", tokens_in=len(user) // 4 or 1, tokens_out=1)
 
-        if "DEGRADED" in system:
+        # A prompt that tells the classifier to fall back to "general" when
+        # unsure is a genuinely lazy instruction: the mock mirrors what a real
+        # model does with it — over-predict "general" and lose the signal.
+        # This is how the shipped degraded prompt (prompts/v2.yaml) regresses.
+        if "prefer general" in system.lower():
             category = "general"
         else:
             # Only match keywords inside the email body, not the JSON-format

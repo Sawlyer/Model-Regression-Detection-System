@@ -49,7 +49,10 @@ async def test_run_eval_provider_failure_becomes_error_case(monkeypatch):
 
 
 async def test_run_eval_degraded_prompt_fails_non_general():
-    bad_cfg = CFG.model_copy(update={"system_prompt": "classify DEGRADED", "version": "v2"})
+    bad_cfg = CFG.model_copy(update={
+        "system_prompt": "Classify emails. When unsure, prefer general.",
+        "version": "v2",
+    })
     ds = _ds([
         TestCase(id="a", input="refund my payment", expected_category="billing",
                  ideal_summary="s", expected_difficulty="easy"),

@@ -1,14 +1,14 @@
 version: v2
 timestamp: 2026-07-08T14:00:00Z
 model: openai/gpt-oss-20b:free
-# Demo prompt: intentionally degraded to demonstrate regression detection.
-# The DEGRADED marker makes the mock provider misclassify everything as
-# 'general'; against a real model the vague instructions degrade accuracy.
+# Demo prompt: a deliberately WORSE version of v1, used to show the pipeline
+# catching a regression. Changes vs v1: vaguer instructions, no category
+# guide, no few-shot examples, and a lazy "prefer general" fallback that
+# biases the classifier toward the 'general' bucket and loses accuracy.
+# Run `regression-eval run prompts/v2.yaml` after a v1 baseline to see it
+# flagged CRITICAL. This is the system working, not failing.
 system_prompt: |
-  DEGRADED You are a customer support email classifier for a SaaS company.
-  Read the customer email and return:
-  - category: exactly one of billing, technical, account, general
-  - summary: one sentence
-
-  When unsure, prefer general.
+  You are an email classifier. Don't overthink it.
+  Pick a category: billing, technical, account, or general.
+  When unsure, prefer general — most emails are general anyway.
 few_shot: []

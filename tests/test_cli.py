@@ -8,6 +8,7 @@ from regression_detector.cli import app
 runner = CliRunner()
 ROOT = Path(__file__).parent.parent
 PROMPT_V1 = ROOT / "prompts" / "v1.yaml"
+PROMPT_V2 = ROOT / "prompts" / "v2.yaml"
 DATASET = ROOT / "data" / "golden_dataset.json"
 
 
@@ -28,15 +29,10 @@ def test_first_run_is_baseline_exit_zero(tmp_path: Path):
 
 
 def test_degraded_prompt_triggers_critical_exit_2(tmp_path: Path):
-    # baseline with good prompt
+    # baseline with the good prompt
     assert _invoke_run(tmp_path, PROMPT_V1).exit_code == 0
-    # degraded prompt -> mock forces 'general' -> many regressions
-    bad = tmp_path / "v2.yaml"
-    bad.write_text(PROMPT_V1.read_text().replace(
-        "version: v1", "version: v2").replace(
-        "You are a customer support email classifier",
-        "DEGRADED You are a customer support email classifier"))
-    result = _invoke_run(tmp_path, bad)
+    # the shipped degraded prompt biases everything to 'general' -> regressions
+    result = _invoke_run(tmp_path, PROMPT_V2)
     assert result.exit_code == 2, result.output
     summary = json.loads((tmp_path / "summary.json").read_text())
     assert summary["status"] == "critical"

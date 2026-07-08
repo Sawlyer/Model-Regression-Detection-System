@@ -19,9 +19,13 @@ async def test_mock_keyword_priority_and_general_fallback():
     assert json.loads(r.text)["category"] == "general"
 
 
-async def test_mock_degraded_prompt_forces_general():
+async def test_mock_lazy_prompt_forces_general():
     p = MockProvider()
-    r = await p.complete(system="classify DEGRADED", user="I want a refund", model="m")
+    r = await p.complete(
+        system="Classify. When unsure, prefer general.",
+        user="I want a refund",
+        model="m",
+    )
     assert json.loads(r.text)["category"] == "general"
 
 
