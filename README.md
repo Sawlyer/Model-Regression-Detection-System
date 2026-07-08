@@ -23,7 +23,7 @@ LLM projects skip:
 
 - **Evaluation design** beyond accuracy: exact-match, LLM-as-judge scoring, latency and cost, all tracked per case.
 - **Regression detection**: run-to-run diffing, configurable warning/critical gates, and separate slow-drift tracking for gradual decay.
-- **Production discipline**: a hand-built golden dataset with deliberate edge cases, deterministic offline tests (49, zero network), a CI gate that blocks merges, Docker packaging, and Slack alerting.
+- **Production discipline**: a hand-built golden dataset with deliberate edge cases, deterministic offline tests (50, zero network), a CI gate that blocks merges, Docker packaging, and Slack alerting.
 - **Clean architecture**: 13 small single-responsibility modules, typed with Pydantic, an async batched runner with retries, and a swappable provider layer (real OpenRouter model or offline mock).
 
 ---
@@ -104,7 +104,7 @@ regression-eval run prompts/v1.yaml --mock
 Run the tests (fully offline, no API calls):
 
 ```bash
-pytest          # 49 tests
+pytest          # 50 tests
 ```
 
 ---
@@ -277,5 +277,5 @@ src/regression_detector/
   cli.py          the `regression-eval` command
 prompts/          versioned prompt YAML (the "code" under test)
 data/             the golden dataset
-tests/            49 offline tests
+tests/            50 offline tests
 ```
