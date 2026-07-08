@@ -1,0 +1,14 @@
+version: v2
+timestamp: 2026-07-08T14:00:00Z
+model: meta-llama/llama-3.3-70b-instruct:free
+# Demo prompt: intentionally degraded to demonstrate regression detection.
+# The DEGRADED marker makes the mock provider misclassify everything as
+# 'general'; against a real model the vague instructions degrade accuracy.
+system_prompt: |
+  DEGRADED You are a customer support email classifier for a SaaS company.
+  Read the customer email and return:
+  - category: exactly one of billing, technical, account, general
+  - summary: one sentence
+
+  When unsure, prefer general.
+few_shot: []
