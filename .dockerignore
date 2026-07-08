@@ -1,0 +1,8 @@
+.venv/
+.git/
+__pycache__/
+reports/
+eval_runs.db
+tests/
+docs/
+.env
