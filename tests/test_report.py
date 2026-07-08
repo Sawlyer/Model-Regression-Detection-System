@@ -42,7 +42,8 @@ def test_report_contains_key_sections(tmp_path: Path):
     assert "test-model" in html
     assert "critical" in html.lower()
     assert "I want a refund" in html          # regression input shown
-    assert "old ok" in html and "new bad" in html  # side-by-side outputs
+    # side-by-side categories: was 'billing' (correct), now 'general' (wrong)
+    assert "billing" in html and "general" in html
     assert "<svg" in html                      # trend chart
 
 

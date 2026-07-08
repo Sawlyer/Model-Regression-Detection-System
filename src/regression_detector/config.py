@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 @dataclass
 class Settings:
     openrouter_api_key: str | None = None
+    openrouter_model: str | None = None
     slack_webhook_url: str | None = None
     warning_threshold: float = 0.03
     critical_threshold: float = 0.08
@@ -25,6 +26,7 @@ class Settings:
             load_dotenv(env_file)
         return cls(
             openrouter_api_key=os.getenv("OPENROUTER_API_KEY") or None,
+            openrouter_model=os.getenv("OPENROUTER_MODEL") or None,
             slack_webhook_url=os.getenv("SLACK_WEBHOOK_URL") or None,
             warning_threshold=float(os.getenv("WARNING_THRESHOLD", "0.03")),
             critical_threshold=float(os.getenv("CRITICAL_THRESHOLD", "0.08")),

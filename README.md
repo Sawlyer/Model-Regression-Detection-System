@@ -16,6 +16,16 @@ This project makes prompt quality a **measurable, versioned, gated** thing:
 - **Versioned** — prompts live as YAML files; changing one is a diff you can review.
 - **Gated** — a big enough quality drop fails CI and blocks the merge.
 
+## What this project demonstrates (for reviewers)
+
+The interesting engineering is what happens *after* deployment — the mindset most
+LLM projects skip:
+
+- **Evaluation design** beyond accuracy: exact-match, LLM-as-judge scoring, latency and cost, all tracked per case.
+- **Regression detection**: run-to-run diffing, configurable warning/critical gates, and separate slow-drift tracking for gradual decay.
+- **Production discipline**: a hand-built golden dataset with deliberate edge cases, deterministic offline tests (49, zero network), a CI gate that blocks merges, Docker packaging, and Slack alerting.
+- **Clean architecture**: 13 small single-responsibility modules, typed with Pydantic, an async batched runner with retries, and a swappable provider layer (real OpenRouter model or offline mock).
+
 ---
 
 ## The feature under test
@@ -125,6 +135,26 @@ regression-eval list-runs
 
 ---
 
+## Switching models
+
+The model is set per-prompt in the YAML (`model:` field), but you can override it
+for any run without editing files — swapping a model is itself a change worth
+re-evaluating, so this is a first-class feature.
+
+```bash
+# one-off override on the command line (highest priority)
+regression-eval run prompts/v1.yaml --model nvidia/nemotron-3.5-content-safety:free
+
+# or set it once for every run
+export OPENROUTER_MODEL=nvidia/nemotron-3.5-content-safety:free
+regression-eval run prompts/v1.yaml
+```
+
+Precedence: `--model` flag → `OPENROUTER_MODEL` env → the prompt YAML's `model:`.
+Any [OpenRouter model slug](https://openrouter.ai/models) works; the `:free`
+suffix picks the free tier. Typical workflow: run a baseline on model A, then
+`--model B` to see whether B regresses any cases before you switch.
+
 ## Commands
 
 ```bash
@@ -138,6 +168,7 @@ regression-eval report <run-id> --out x.html  # regenerate a report
 
 | Option | Meaning |
 |---|---|
+| `--model SLUG` / `-m` | override the OpenRouter model for this run (see "Switching models") |
 | `--mock` | use the offline deterministic provider (no API, no cost) |
 | `--dataset PATH` | use a different golden dataset (default `data/golden_dataset.json`) |
 | `--db PATH` | SQLite location (default `eval_runs.db`) |

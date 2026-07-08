@@ -2,88 +2,255 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Eval Report — {{ current.run_id }}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eval report — {{ current.run_id }} [{{ status_label }}]</title>
 <style>
-  body { font-family: system-ui, sans-serif; margin: 2rem auto; max-width: 960px; color: #1a1a2e; }
-  h1, h2 { border-bottom: 2px solid #eee; padding-bottom: .3rem; }
-  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-  th, td { border: 1px solid #ddd; padding: .5rem .75rem; text-align: left; vertical-align: top; }
-  th { background: #f5f5f7; }
-  .badge { display: inline-block; padding: .2rem .6rem; border-radius: 4px; color: #fff; font-weight: 600; }
-  .ok { background: #2e9e5b; } .warning { background: #e0a400; } .critical { background: #d33a2c; }
-  .delta-neg { color: #d33a2c; font-weight: 600; } .delta-pos { color: #2e9e5b; font-weight: 600; }
-  .banner { background: #eef4ff; border-left: 4px solid #4a7dff; padding: .8rem 1rem; margin: 1rem 0; }
-  .drift { background: #fff4e5; border-left: 4px solid #e0a400; }
-  .old { background: #fdecea; } .new { background: #eafaf0; }
+  :root {
+    --surface: #fcfcfb; --plane: #f4f4f1; --card: #ffffff;
+    --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series: #2a78d6; --area: rgba(42,120,214,0.10);
+    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
+    --good-ink: #006300; --crit-ink: #b31d1d;
+    --old: rgba(208,59,59,0.09); --new: rgba(12,163,12,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #1a1a19; --plane: #0d0d0d; --card: #222220;
+      --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.12);
+      --series: #3987e5; --area: rgba(57,135,229,0.14);
+      --good: #0ca30c; --warning: #fab219; --critical: #e05a5a;
+      --good-ink: #35c635; --crit-ink: #ef8a8a;
+      --old: rgba(224,90,90,0.14); --new: rgba(12,163,12,0.16);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2rem 1rem; background: var(--plane); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.5;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.25rem 1.4rem; margin-bottom: 1rem;
+  }
+  h1 { font-size: 1.5rem; margin: 0 0 .2rem; }
+  h2 { font-size: 1.05rem; margin: 0 0 .9rem; letter-spacing: .01em; }
+  .sub { color: var(--ink-2); margin: 0; font-size: .95rem; }
+  .explain { color: var(--ink-2); font-size: .9rem; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: .7rem .9rem; margin: 0; }
+  .explain strong { color: var(--ink); }
+
+  /* verdict banner */
+  .verdict { display: flex; gap: 1rem; align-items: flex-start;
+    border-left: 6px solid var(--muted); }
+  .verdict.ok { border-color: var(--good); }
+  .verdict.warning { border-color: var(--warning); }
+  .verdict.critical { border-color: var(--critical); }
+  .verdict.baseline { border-color: var(--series); }
+  .badge { flex: none; width: 46px; height: 46px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 1.4rem; font-weight: 700;
+    color: #fff; }
+  .ok .badge { background: var(--good); }
+  .warning .badge { background: var(--warning); color: #3a2a00; }
+  .critical .badge { background: var(--critical); }
+  .baseline .badge { background: var(--series); }
+  .verdict h1 { font-size: 1.3rem; }
+
+  /* KPI tiles */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: .8rem; }
+  .tile { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: .8rem .9rem; }
+  .tile .k { color: var(--muted); font-size: .72rem; text-transform: uppercase;
+    letter-spacing: .06em; margin: 0 0 .35rem; }
+  .tile .v { font-size: 1.7rem; font-weight: 650; margin: 0;
+    font-variant-numeric: tabular-nums; }
+  .tile .d { font-size: .82rem; margin: .2rem 0 0; font-variant-numeric: tabular-nums; }
+  .up { color: var(--good-ink); } .down { color: var(--crit-ink); }
+
+  /* category bars */
+  .catrow { display: grid; grid-template-columns: 84px 1fr 96px; align-items: center;
+    gap: .6rem; margin: .45rem 0; }
+  .catrow .name { color: var(--ink-2); font-size: .88rem; text-transform: capitalize; }
+  .bar { background: var(--grid); border-radius: 5px; height: 12px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: var(--series); border-radius: 5px; }
+  .catrow .val { text-align: right; font-size: .85rem; font-variant-numeric: tabular-nums; }
+
+  /* trend chart */
+  svg.trend { width: 100%; height: auto; display: block; }
+  .trend .grid { stroke: var(--grid); stroke-width: 1; }
+  .trend .axis { fill: var(--muted); font-size: 11px; }
+  .trend .area { fill: var(--area); stroke: none; }
+  .trend .line { fill: none; stroke: var(--series); stroke-width: 2.5;
+    stroke-linejoin: round; stroke-linecap: round; }
+  .trend .dot { fill: var(--series); }
+  .trend .dot-last { fill: var(--series); stroke: var(--card); stroke-width: 2; }
+  .trend .pointlbl { fill: var(--ink); font-size: 12px; font-weight: 650; }
+  .empty { color: var(--muted); font-size: .9rem; }
+
+  /* tables */
+  table { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  th, td { border-bottom: 1px solid var(--border); padding: .55rem .6rem;
+    text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-size: .72rem; text-transform: uppercase;
+    letter-spacing: .05em; font-weight: 600; }
+  td.old { background: var(--old); } td.new { background: var(--new); }
+  .cat-tag { font-weight: 650; }
+  .arrow { color: var(--muted); }
+  ul.imp { margin: 0; padding-left: 1.1rem; color: var(--ink-2); font-size: .9rem; }
+
+  .pill { display: inline-block; font-size: .72rem; padding: .1rem .5rem;
+    border-radius: 20px; border: 1px solid var(--border); color: var(--ink-2);
+    background: var(--surface); }
+  .drift { border-left: 6px solid var(--warning); }
+  .meta { display: flex; flex-wrap: wrap; gap: .4rem .6rem; color: var(--ink-2);
+    font-size: .82rem; }
+  footer { color: var(--muted); font-size: .78rem; text-align: center;
+    margin-top: 1.4rem; }
+  .legend { color: var(--muted); font-size: .8rem; margin: .2rem 0 0; }
 </style>
 </head>
 <body>
-<h1>Model Regression Report</h1>
+<div class="wrap">
 
-<h2>Run metadata</h2>
-<table>
-  <tr><th>Run ID</th><td>{{ current.run_id }}</td></tr>
-  <tr><th>Prompt version</th><td>{{ current.prompt_version }}</td></tr>
-  <tr><th>Model</th><td>{{ current.model }}</td></tr>
-  <tr><th>Timestamp</th><td>{{ current.timestamp.isoformat() }}</td></tr>
-  <tr><th>Status</th><td>
-    {% if diff %}<span class="badge {{ diff.status.value }}">{{ diff.status.value | upper }}</span>
-    {% else %}<span class="badge ok">BASELINE</span>{% endif %}
-  </td></tr>
-</table>
+  <div class="card">
+    <h1>AI Classifier — Quality Report</h1>
+    <p class="sub">Automated regression check for a customer-support email classifier.</p>
+    <p class="explain" style="margin-top:.8rem">
+      <strong>What am I looking at?</strong> An AI reads support emails and sorts them
+      into <em>billing / technical / account / general</em>. Every prompt or model
+      change is tested against {{ total }} human-graded emails. This page compares the
+      latest test to the previous one and flags any drop in quality — the same check
+      that runs automatically on every pull request.
+    </p>
+  </div>
 
-{% if drift_detected %}
-<div class="banner drift"><strong>Slow drift warning:</strong>
-  the rolling average of pass rate is {{ "%.1f%%"|format(drift_avg * 100) }} —
-  below the configured threshold, even though no single run may have alerted.</div>
-{% endif %}
+  <div class="card verdict {{ status }}">
+    <div class="badge">{{ status_icon }}</div>
+    <div>
+      <h1>{{ headline }}</h1>
+      <p class="sub">{{ explanation }}</p>
+    </div>
+  </div>
 
-{% if not diff %}
-<div class="banner">This is the <strong>baseline</strong> run — no previous run to compare against.</div>
-{% endif %}
+  {% if drift_detected %}
+  <div class="card drift">
+    <h2 style="margin-bottom:.3rem">⚠ Slow-drift warning</h2>
+    <p class="sub">The rolling average pass rate over recent runs is
+      {{ "%.1f%%"|format(drift_avg_pct) }} — trending down over time even if no single
+      run tripped the alert. This catches gradual decay that per-run checks miss.</p>
+  </div>
+  {% endif %}
 
-<h2>Scorecard</h2>
-<table>
-  <tr><th>Metric</th><th>Current</th>{% if diff %}<th>Delta vs baseline</th>{% endif %}</tr>
-  <tr><td>Pass rate</td><td>{{ "%.1f%%"|format(current.pass_rate * 100) }}</td>
-    {% if diff %}<td class="{{ 'delta-neg' if diff.pass_rate_delta < 0 else 'delta-pos' }}">
-      {{ "%+.1f%%"|format(diff.pass_rate_delta * 100) }}</td>{% endif %}</tr>
-  {% for cat, acc in current.per_category_accuracy.items() %}
-  <tr><td>Accuracy — {{ cat }}</td><td>{{ "%.1f%%"|format(acc * 100) }}</td>
-    {% if diff %}<td class="{{ 'delta-neg' if diff.per_category_delta.get(cat, 0) < 0 else 'delta-pos' }}">
-      {{ "%+.1f%%"|format(diff.per_category_delta.get(cat, 0) * 100) }}</td>{% endif %}</tr>
-  {% endfor %}
-  <tr><td>Avg judge score (1-5)</td>
-    <td>{{ "%.2f"|format(current.avg_judge_score) if current.avg_judge_score is not none else "n/a" }}</td>
-    {% if diff %}<td>—</td>{% endif %}</tr>
-  <tr><td>Avg latency</td><td>{{ "%.0f ms"|format(current.avg_latency_ms) }}</td>{% if diff %}<td>—</td>{% endif %}</tr>
-  <tr><td>Total tokens</td><td>{{ current.total_tokens }}</td>{% if diff %}<td>—</td>{% endif %}</tr>
-</table>
+  <div class="card">
+    <h2>Scorecard</h2>
+    <div class="tiles">
+      <div class="tile">
+        <p class="k">Pass rate</p>
+        <p class="v">{{ "%.0f%%"|format(pass_pct) }}</p>
+        {% if delta_pct is not none %}
+        <p class="d {{ 'up' if delta_pct >= 0 else 'down' }}">
+          {{ "%+.1f%%"|format(delta_pct) }} vs previous
+          ({{ "%.0f%%"|format(baseline_pct) }})</p>
+        {% else %}<p class="d" style="color:var(--muted)">baseline</p>{% endif %}
+      </div>
+      <div class="tile">
+        <p class="k">Cases passed</p>
+        <p class="v">{{ passed }}<span style="font-size:1rem;color:var(--muted)">/{{ total }}</span></p>
+        {% if errored %}<p class="d down">{{ errored }} errored (e.g. rate limit)</p>
+        {% else %}<p class="d" style="color:var(--muted)">no errors</p>{% endif %}
+      </div>
+      <div class="tile">
+        <p class="k">Regressions</p>
+        <p class="v {{ 'down' if regression_count else '' }}">{{ regression_count }}</p>
+        <p class="d" style="color:var(--muted)">passed before, fail now</p>
+      </div>
+      <div class="tile">
+        <p class="k">Improvements</p>
+        <p class="v {{ 'up' if improvement_count else '' }}">{{ improvement_count }}</p>
+        <p class="d" style="color:var(--muted)">failed before, pass now</p>
+      </div>
+      <div class="tile">
+        <p class="k">Summary quality</p>
+        <p class="v">{{ "%.2f"|format(current.avg_judge_score) if current.avg_judge_score is not none else "n/a" }}<span style="font-size:1rem;color:var(--muted)">/5</span></p>
+        <p class="d" style="color:var(--muted)">LLM-judged relevance</p>
+      </div>
+      <div class="tile">
+        <p class="k">Avg latency</p>
+        <p class="v">{{ "%.0f"|format(current.avg_latency_ms) }}<span style="font-size:1rem;color:var(--muted)">ms</span></p>
+        <p class="d" style="color:var(--muted)">{{ current.total_tokens }} tokens total</p>
+      </div>
+    </div>
+    <p class="legend">Verdict thresholds: a pass-rate drop over
+      {{ "%.0f%%"|format(warning_pct) }} is a warning, over
+      {{ "%.0f%%"|format(critical_pct) }} is critical and blocks the merge.</p>
+  </div>
 
-{% if diff and diff.regressions %}
-<h2>Regressions ({{ diff.regressions | length }})</h2>
-<table>
-  <tr><th>Case</th><th>Input</th><th>Expected</th><th>Baseline output</th><th>Current output</th></tr>
-  {% for f in diff.regressions %}
-  <tr>
-    <td>{{ f.case_id }}</td>
-    <td>{{ f.input }}</td>
-    <td>{{ f.expected_category.value }}</td>
-    <td class="old">{% if f.baseline_output %}<strong>{{ f.baseline_output.category.value }}</strong><br>{{ f.baseline_output.summary }}{% else %}error{% endif %}</td>
-    <td class="new">{% if f.current_output %}<strong>{{ f.current_output.category.value }}</strong><br>{{ f.current_output.summary }}{% else %}error{% endif %}</td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
+  <div class="card">
+    <h2>Accuracy by category</h2>
+    {% for c in categories %}
+    <div class="catrow">
+      <span class="name">{{ c.name }}</span>
+      <span class="bar"><span style="width: {{ "%.0f"|format(c.acc * 100) }}%"></span></span>
+      <span class="val">{{ "%.0f%%"|format(c.acc * 100) }}{% if c.delta is not none and c.delta != 0 %}
+        <span class="{{ 'up' if c.delta > 0 else 'down' }}">({{ "%+.0f"|format(c.delta * 100) }})</span>{% endif %}</span>
+    </div>
+    {% endfor %}
+  </div>
 
-{% if diff and diff.improvements %}
-<h2>Improvements ({{ diff.improvements | length }})</h2>
-<ul>{% for f in diff.improvements %}<li>{{ f.case_id }} — now returns
-  {% if f.current_output %}<strong>{{ f.current_output.category.value }}</strong>{% else %}error{% endif %}</li>{% endfor %}</ul>
-{% endif %}
+  {% if diff and diff.regressions %}
+  <div class="card">
+    <h2>Regressed cases — {{ diff.regressions | length }}</h2>
+    <p class="legend" style="margin-bottom:.6rem">These emails were classified
+      correctly before and are wrong now. <span class="pill" style="background:var(--old)">left = before</span>
+      <span class="pill" style="background:var(--new)">right = after</span></p>
+    <div style="overflow-x:auto">
+    <table>
+      <tr><th>Email (excerpt)</th><th>Should be</th><th>Before</th><th>After</th></tr>
+      {% for f in diff.regressions %}
+      <tr>
+        <td>{{ f.input[:120] }}{% if f.input|length > 120 %}…{% endif %}</td>
+        <td><span class="cat-tag">{{ f.expected_category.value }}</span></td>
+        <td class="old">{% if f.baseline_output %}<span class="cat-tag">{{ f.baseline_output.category.value }}</span>{% else %}<em>error</em>{% endif %}</td>
+        <td class="new">{% if f.current_output %}<span class="cat-tag">{{ f.current_output.category.value }}</span>{% else %}<em>error</em>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    </div>
+  </div>
+  {% endif %}
 
-<h2>Pass-rate trend (last {{ history | length }} runs)</h2>
-{{ trend_svg | safe }}
+  {% if diff and diff.improvements %}
+  <div class="card">
+    <h2>Improved cases — {{ diff.improvements | length }}</h2>
+    <ul class="imp">
+      {% for f in diff.improvements %}
+      <li>{{ f.input[:90] }}{% if f.input|length > 90 %}…{% endif %} —
+        now <strong>{{ f.current_output.category.value if f.current_output else "error" }}</strong>
+        <span class="arrow">(target: {{ f.expected_category.value }})</span></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
 
+  <div class="card">
+    <h2>Pass-rate trend — last {{ n_runs }} run(s)</h2>
+    {{ trend_svg | safe }}
+  </div>
+
+  <div class="card">
+    <h2>Run details</h2>
+    <div class="meta">
+      <span class="pill">run {{ current.run_id }}</span>
+      <span class="pill">prompt {{ current.prompt_version }}</span>
+      <span class="pill">model {{ current.model }}</span>
+      <span class="pill">{{ current.timestamp.strftime("%Y-%m-%d %H:%M UTC") }}</span>
+    </div>
+  </div>
+
+  <footer>Generated by regression-detector · {{ current.run_id }}</footer>
+</div>
 </body>
 </html>

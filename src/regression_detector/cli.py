@@ -35,6 +35,11 @@ def _make_provider(settings: Settings, mock: bool):
 def run(
     prompt_path: Path = typer.Argument(..., help="Path to versioned prompt YAML"),
     dataset: Path = typer.Option(Path("data/golden_dataset.json"), "--dataset"),
+    model: str | None = typer.Option(
+        None, "--model", "-m",
+        help="OpenRouter model slug, overrides the prompt YAML "
+             "(e.g. nvidia/nemotron-3.5-content-safety:free)",
+    ),
     mock: bool = typer.Option(False, "--mock", help="Force the offline mock provider"),
     db: Path | None = typer.Option(None, "--db"),
     report_dir: Path = typer.Option(Path("reports"), "--report-dir"),
@@ -44,6 +49,11 @@ def run(
     settings = Settings.load()
     store = RunStore(db or settings.db_path)
     cfg = PromptConfig.from_yaml(prompt_path)
+    # Model precedence: --model flag > OPENROUTER_MODEL env > the prompt YAML.
+    chosen_model = model or settings.openrouter_model
+    if chosen_model:
+        cfg = cfg.model_copy(update={"model": chosen_model})
+        typer.echo(f"Using model: {cfg.model}")
     ds = load_dataset(dataset)
     provider = _make_provider(settings, mock)
 
