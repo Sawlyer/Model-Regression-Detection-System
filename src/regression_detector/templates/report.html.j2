@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Eval Report — {{ current.run_id }}</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 2rem auto; max-width: 960px; color: #1a1a2e; }
+  h1, h2 { border-bottom: 2px solid #eee; padding-bottom: .3rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ddd; padding: .5rem .75rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f7; }
+  .badge { display: inline-block; padding: .2rem .6rem; border-radius: 4px; color: #fff; font-weight: 600; }
+  .ok { background: #2e9e5b; } .warning { background: #e0a400; } .critical { background: #d33a2c; }
+  .delta-neg { color: #d33a2c; font-weight: 600; } .delta-pos { color: #2e9e5b; font-weight: 600; }
+  .banner { background: #eef4ff; border-left: 4px solid #4a7dff; padding: .8rem 1rem; margin: 1rem 0; }
+  .drift { background: #fff4e5; border-left: 4px solid #e0a400; }
+  .old { background: #fdecea; } .new { background: #eafaf0; }
+</style>
+</head>
+<body>
+<h1>Model Regression Report</h1>
+
+<h2>Run metadata</h2>
+<table>
+  <tr><th>Run ID</th><td>{{ current.run_id }}</td></tr>
+  <tr><th>Prompt version</th><td>{{ current.prompt_version }}</td></tr>
+  <tr><th>Model</th><td>{{ current.model }}</td></tr>
+  <tr><th>Timestamp</th><td>{{ current.timestamp.isoformat() }}</td></tr>
+  <tr><th>Status</th><td>
+    {% if diff %}<span class="badge {{ diff.status.value }}">{{ diff.status.value | upper }}</span>
+    {% else %}<span class="badge ok">BASELINE</span>{% endif %}
+  </td></tr>
+</table>
+
+{% if drift_detected %}
+<div class="banner drift"><strong>Slow drift warning:</strong>
+  the rolling average of pass rate is {{ "%.1f%%"|format(drift_avg * 100) }} —
+  below the configured threshold, even though no single run may have alerted.</div>
+{% endif %}
+
+{% if not diff %}
+<div class="banner">This is the <strong>baseline</strong> run — no previous run to compare against.</div>
+{% endif %}
+
+<h2>Scorecard</h2>
+<table>
+  <tr><th>Metric</th><th>Current</th>{% if diff %}<th>Delta vs baseline</th>{% endif %}</tr>
+  <tr><td>Pass rate</td><td>{{ "%.1f%%"|format(current.pass_rate * 100) }}</td>
+    {% if diff %}<td class="{{ 'delta-neg' if diff.pass_rate_delta < 0 else 'delta-pos' }}">
+      {{ "%+.1f%%"|format(diff.pass_rate_delta * 100) }}</td>{% endif %}</tr>
+  {% for cat, acc in current.per_category_accuracy.items() %}
+  <tr><td>Accuracy — {{ cat }}</td><td>{{ "%.1f%%"|format(acc * 100) }}</td>
+    {% if diff %}<td class="{{ 'delta-neg' if diff.per_category_delta.get(cat, 0) < 0 else 'delta-pos' }}">
+      {{ "%+.1f%%"|format(diff.per_category_delta.get(cat, 0) * 100) }}</td>{% endif %}</tr>
+  {% endfor %}
+  <tr><td>Avg judge score (1-5)</td>
+    <td>{{ "%.2f"|format(current.avg_judge_score) if current.avg_judge_score is not none else "n/a" }}</td>
+    {% if diff %}<td>—</td>{% endif %}</tr>
+  <tr><td>Avg latency</td><td>{{ "%.0f ms"|format(current.avg_latency_ms) }}</td>{% if diff %}<td>—</td>{% endif %}</tr>
+  <tr><td>Total tokens</td><td>{{ current.total_tokens }}</td>{% if diff %}<td>—</td>{% endif %}</tr>
+</table>
+
+{% if diff and diff.regressions %}
+<h2>Regressions ({{ diff.regressions | length }})</h2>
+<table>
+  <tr><th>Case</th><th>Input</th><th>Expected</th><th>Baseline output</th><th>Current output</th></tr>
+  {% for f in diff.regressions %}
+  <tr>
+    <td>{{ f.case_id }}</td>
+    <td>{{ f.input }}</td>
+    <td>{{ f.expected_category.value }}</td>
+    <td class="old">{% if f.baseline_output %}<strong>{{ f.baseline_output.category.value }}</strong><br>{{ f.baseline_output.summary }}{% else %}error{% endif %}</td>
+    <td class="new">{% if f.current_output %}<strong>{{ f.current_output.category.value }}</strong><br>{{ f.current_output.summary }}{% else %}error{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% if diff and diff.improvements %}
+<h2>Improvements ({{ diff.improvements | length }})</h2>
+<ul>{% for f in diff.improvements %}<li>{{ f.case_id }} — now returns
+  {% if f.current_output %}<strong>{{ f.current_output.category.value }}</strong>{% else %}error{% endif %}</li>{% endfor %}</ul>
+{% endif %}
+
+<h2>Pass-rate trend (last {{ history | length }} runs)</h2>
+{{ trend_svg | safe }}
+
+</body>
+</html>
