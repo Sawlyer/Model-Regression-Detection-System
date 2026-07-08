@@ -1,6 +1,6 @@
 version: v2
 timestamp: 2026-07-08T14:00:00Z
-model: openai/gpt-oss-20b:free
+model: openrouter/free
 # Demo prompt: a deliberately WORSE version of v1, used to show the pipeline
 # catching a regression. Changes vs v1: vaguer instructions, no category
 # guide, no few-shot examples, and a lazy "prefer general" fallback that

@@ -1,6 +1,6 @@
 version: v1
 timestamp: 2026-07-08T10:00:00Z
-model: openai/gpt-oss-20b:free
+model: openrouter/free
 system_prompt: |
   You are a customer support email classifier for a SaaS company.
   Read the customer email and return:
