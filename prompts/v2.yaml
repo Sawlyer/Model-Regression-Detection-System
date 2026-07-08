@@ -1,6 +1,6 @@
 version: v2
 timestamp: 2026-07-08T14:00:00Z
-model: meta-llama/llama-3.3-70b-instruct:free
+model: openai/gpt-oss-20b:free
 # Demo prompt: intentionally degraded to demonstrate regression detection.
 # The DEGRADED marker makes the mock provider misclassify everything as
 # 'general'; against a real model the vague instructions degrade accuracy.

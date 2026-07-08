@@ -1,6 +1,6 @@
 version: v1
 timestamp: 2026-07-08T10:00:00Z
-model: meta-llama/llama-3.3-70b-instruct:free
+model: openai/gpt-oss-20b:free
 system_prompt: |
   You are a customer support email classifier for a SaaS company.
   Read the customer email and return:
