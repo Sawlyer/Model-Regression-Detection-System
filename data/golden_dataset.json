@@ -1,0 +1,485 @@
+{
+  "version": "1.0.0",
+  "cases": [
+    {
+      "id": "tc-001",
+      "input": "Hello, I noticed my card was charged $49 twice on the same day for my monthly plan. Please refund one of the charges.",
+      "expected_category": "billing",
+      "ideal_summary": "Customer was double-charged for their monthly plan and requests a refund of the duplicate charge.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-002",
+      "input": "Hi team, our finance department needs a proper invoice with our VAT number for the last three payments. Can you send those over?",
+      "expected_category": "billing",
+      "ideal_summary": "Customer requests VAT invoices for their last three payments.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-003",
+      "input": "I upgraded from Starter to Pro halfway through the month and I don't understand the prorated charge on my statement. Can someone explain it?",
+      "expected_category": "billing",
+      "ideal_summary": "Customer wants an explanation of the prorated charge after upgrading plans mid-month.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-004",
+      "input": "I cancelled my subscription last week but I still have five months left that I paid for annually. How do I get a refund for the unused time?",
+      "expected_category": "billing",
+      "ideal_summary": "Customer cancelled an annual subscription and asks for a refund of the unused months.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-005",
+      "input": "The promo code SUMMER20 was supposed to give me 20% off but the payment that went through was for the full price. Please adjust the charge.",
+      "expected_category": "billing",
+      "ideal_summary": "Customer was charged full price despite a valid discount code and wants the charge corrected.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-006",
+      "input": "My company card expired and I need to update the payment method before the next billing cycle. Where do I do that?",
+      "expected_category": "billing",
+      "ideal_summary": "Customer needs to update their expired payment method before the next billing cycle.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-007",
+      "input": "We want to switch from monthly to annual billing to get the discount. Will the amount we already paid this month be credited?",
+      "expected_category": "billing",
+      "ideal_summary": "Customer wants to switch to annual billing and asks whether this month's payment will be credited.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-008",
+      "input": "I cancelled in March, I have the confirmation email, and yet you charged me again in April. This is the second time I'm writing about this refund.",
+      "expected_category": "billing",
+      "ideal_summary": "Customer was charged after cancelling and is following up on an unresolved refund request.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-009",
+      "input": "The receipt for my last payment never arrived and I need it for my expense report by Friday. Can you resend the invoice?",
+      "expected_category": "billing",
+      "ideal_summary": "Customer needs their latest payment receipt resent for an expense report.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-010",
+      "input": "Do you offer a student discount on the Pro subscription? I'm enrolled full-time and the current payment is a bit steep for me.",
+      "expected_category": "billing",
+      "ideal_summary": "Student asks whether a discount is available on the Pro subscription price.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-011",
+      "input": "Hi, sorry for the long email. We've been customers for three years and generally love the product. Last quarter we downsized the team from 40 to 12 people, and I thought our plan would adjust automatically, but looking at the statements we've been paying for 40 seats this whole time. I'd like to understand our options for a partial refund or at least a credit going forward, and also how to make sure the seat count updates automatically next time.",
+      "expected_category": "billing",
+      "ideal_summary": "Customer overpaid for unused seats after downsizing and requests a refund or credit plus automatic seat adjustment.",
+      "expected_difficulty": "medium",
+      "notes": "Long rambling email; billing intent buried at the end."
+    },
+    {
+      "id": "tc-012",
+      "input": "Quick question and a small gripe. The new dashboard looks great, congrats on the redesign. The question: our last invoice shows a line item called 'usage overage' that I've never seen before, and it added $180. Nobody warned us we were close to any limit. What is this and can it be waived this once?",
+      "expected_category": "billing",
+      "ideal_summary": "Customer questions an unexpected usage-overage line item on their invoice and asks for it to be waived.",
+      "expected_difficulty": "medium",
+      "notes": "Mixes praise and a billing dispute; dominant intent is the invoice question."
+    },
+    {
+      "id": "tc-013",
+      "input": "refund???",
+      "expected_category": "billing",
+      "ideal_summary": "Customer demands a refund without providing any context.",
+      "expected_difficulty": "hard",
+      "notes": "Extremely short email with no context; tests behavior on minimal input."
+    },
+    {
+      "id": "tc-014",
+      "input": "Every time I open the billing settings page to download my invoice, the page crashes. And while we're at it, I was charged twice last month. Mainly I just want that duplicate charge refunded.",
+      "expected_category": "billing",
+      "ideal_summary": "Customer reports a crashing billing page but primarily wants a duplicate charge refunded.",
+      "expected_difficulty": "hard",
+      "notes": "Ambiguous billing vs technical; the stated main ask is the refund, so billing is correct."
+    },
+    {
+      "id": "tc-015",
+      "input": "I deleted my profile two months ago, or at least I thought I did, because you charged my card again yesterday. Why am I still being billed for something I no longer use?",
+      "expected_category": "billing",
+      "ideal_summary": "Customer is still being charged after deleting their profile and wants the billing stopped.",
+      "expected_difficulty": "hard",
+      "notes": "Ambiguous billing vs account; the complaint is about the charge, not about the deletion mechanics."
+    },
+    {
+      "id": "tc-016",
+      "input": "Since this morning, every attempt to export our monthly data ends with a 500 error. We need those exports for a client meeting tomorrow.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer gets a 500 error when exporting data and needs it fixed urgently for a client meeting.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-017",
+      "input": "After yesterday's update the desktop app crashes on launch, every single time. I'm on Windows 11. Reinstalling didn't help.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer's desktop app crashes on launch after the latest update, even after reinstalling.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-018",
+      "input": "Your website takes more than 30 seconds to load the analytics page. It used to be instant. Did something change on your side?",
+      "expected_category": "technical",
+      "ideal_summary": "Customer reports the analytics page now takes over 30 seconds to load.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-019",
+      "input": "There's a bug in the notification system: my team stopped receiving task-assignment alerts on Tuesday. Nothing in spam, settings unchanged.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer's team stopped receiving task-assignment notifications and suspects a bug.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-020",
+      "input": "Image uploads are broken in the editor. The progress bar reaches 100% and then the image just disappears. Tried Chrome and Firefox.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer cannot upload images in the editor; uploads complete but the image disappears.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-021",
+      "input": "The sync between my laptop and phone throws a 'conflict error' about ten times a day and duplicates my notes. It started last week.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer experiences frequent sync conflict errors that duplicate their notes across devices.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-022",
+      "input": "Generating the quarterly PDF report makes the whole app freeze and then crash. Smaller reports work fine. Our data set is around 200k rows.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer's app crashes when generating a large quarterly PDF report.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-023",
+      "input": "In dark mode, the text in dropdown menus renders white on white, so it's unreadable. Looks like a CSS bug introduced recently.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer reports a dark-mode rendering bug making dropdown text unreadable.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-024",
+      "input": "Our integration with your REST API started returning error 429 for every request this afternoon, even though we're far below the documented rate limits.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer's API integration receives 429 errors despite staying below documented rate limits.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-025",
+      "input": "The mobile app freezes on the search screen whenever I type more than two characters. iPhone 15, latest version of the app.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer's mobile app freezes when typing in the search screen on iPhone.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-026",
+      "input": "Hey folks, not sure if this is on my end or yours. Our office wifi has been flaky lately, so I first blamed that, but my colleague on a different network sees the same thing: the kanban board sometimes shows an error banner saying 'failed to fetch cards' and stays empty until you reload three or four times. It's been happening on and off for two weeks. Any ideas?",
+      "expected_category": "technical",
+      "ideal_summary": "Customer's kanban board intermittently fails to fetch cards across different networks, requiring multiple reloads.",
+      "expected_difficulty": "medium",
+      "notes": "Customer hedges about the cause; reproduced on two networks so it's a product defect report."
+    },
+    {
+      "id": "tc-027",
+      "input": "I'll try to describe this as precisely as I can. Steps: open a project, duplicate any task with attachments, then archive the original. Result: the duplicated task loses all its attachments about a minute later. Expected: attachments stay. This happens on both the web app and the desktop version, and I can reproduce it 100% of the time. Happy to jump on a call if that helps.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer provides reproducible steps for a bug where duplicated tasks lose attachments after the original is archived.",
+      "expected_difficulty": "medium",
+      "notes": "Detailed structured bug report; dominant intent obvious but long."
+    },
+    {
+      "id": "tc-028",
+      "input": "Since the latest update I get signed out every hour or so and have to re-enter my credentials each time. My colleagues on the same plan don't have this. Is my session being invalidated by something on your side?",
+      "expected_category": "technical",
+      "ideal_summary": "Customer is repeatedly signed out since the latest update and suspects a session-handling defect.",
+      "expected_difficulty": "hard",
+      "notes": "Ambiguous technical vs account; repeated forced sign-outs after an update point to a session bug, not a credentials problem."
+    },
+    {
+      "id": "tc-029",
+      "input": "Great job breaking the export button in the latest update. Truly impressive work. I especially enjoy clicking it and watching absolutely nothing happen.",
+      "expected_category": "technical",
+      "ideal_summary": "Customer sarcastically reports that the export button no longer does anything since the latest update.",
+      "expected_difficulty": "hard",
+      "notes": "Sarcastic tone; models must detect the underlying defect report, not classify as feedback."
+    },
+    {
+      "id": "tc-030",
+      "input": "app broken",
+      "expected_category": "technical",
+      "ideal_summary": "Customer reports the app is not working without providing details.",
+      "expected_difficulty": "hard",
+      "notes": "Extremely short email; tests behavior on minimal input."
+    },
+    {
+      "id": "tc-031",
+      "input": "I requested a password reset three times today and the email never shows up. Checked spam. My address is correct in the form.",
+      "expected_category": "account",
+      "ideal_summary": "Customer cannot reset their password because the reset email never arrives.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-032",
+      "input": "My account got locked after a few failed login attempts this morning. It's been four hours and it still says 'temporarily locked'. Can you unlock it?",
+      "expected_category": "account",
+      "ideal_summary": "Customer's account remains locked hours after failed login attempts and they request an unlock.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-033",
+      "input": "I need to change the email address associated with my account from my old work address to my personal one. The settings page won't let me.",
+      "expected_category": "account",
+      "ideal_summary": "Customer cannot change the email address on their account via settings and needs help.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-034",
+      "input": "Please delete my account and all associated personal data under GDPR. I'd like written confirmation once it's done.",
+      "expected_category": "account",
+      "ideal_summary": "Customer requests GDPR deletion of their account and data with written confirmation.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-035",
+      "input": "I lost the phone I used for two-factor authentication and now I can't get into my account. What's the recovery procedure?",
+      "expected_category": "account",
+      "ideal_summary": "Customer lost their two-factor device and needs the account recovery procedure.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-036",
+      "input": "Is it possible to change my username? I created the account years ago with a joke name and now clients can see it.",
+      "expected_category": "account",
+      "ideal_summary": "Customer wants to change an embarrassing username visible to clients.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-037",
+      "input": "I changed my password yesterday and now neither the old nor the new one works for login. I'm sure I'm typing them correctly.",
+      "expected_category": "account",
+      "ideal_summary": "Customer cannot log in with either old or new password after a password change.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-038",
+      "input": "I accidentally created two accounts with different email domains. Can you merge them so I keep the project history from both?",
+      "expected_category": "account",
+      "ideal_summary": "Customer wants two accidentally created accounts merged while keeping history from both.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-039",
+      "input": "An employee left the company last month and still has access to our workspace. How do I remove their account access as the admin?",
+      "expected_category": "account",
+      "ideal_summary": "Admin needs to revoke workspace access for a former employee.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-040",
+      "input": "Bit of a weird situation. I manage accounts for my whole family (we share the family plan) and my daughter changed the login email on the main profile to her school address as a prank. Now the verification goes to an address she can't check during term time. I have receipts proving I own the plan. How do we get the main profile back under my email?",
+      "expected_category": "account",
+      "ideal_summary": "Family-plan owner needs the main profile's login email restored after it was changed to an inaccessible address.",
+      "expected_difficulty": "medium",
+      "notes": "Long anecdotal story; core need is regaining control of the login email."
+    },
+    {
+      "id": "tc-041",
+      "input": "Our IT department enforces SSO for all tools. I set up my profile with a personal login before we enabled SSO, and now I have two identities in your system and half my projects are attached to the wrong one. Could someone consolidate my access under the SSO identity without losing the projects?",
+      "expected_category": "account",
+      "ideal_summary": "Customer needs their pre-SSO identity merged into their SSO identity without losing projects.",
+      "expected_difficulty": "medium",
+      "notes": "Enterprise SSO identity conflict; dominant intent is access consolidation."
+    },
+    {
+      "id": "tc-042",
+      "input": "I've been locked out of my account since Monday, and I'm worried because I know you charged us for the annual renewal this week. If I can't get in, I can't check whether the renewal went through on the right card. Getting back in is the urgent part.",
+      "expected_category": "account",
+      "ideal_summary": "Customer is locked out of their account and urgently needs access restored, partly to verify a renewal charge.",
+      "expected_difficulty": "hard",
+      "notes": "Ambiguous account vs billing; the explicit urgent ask is regaining access, the charge is secondary."
+    },
+    {
+      "id": "tc-043",
+      "input": "Hello, je n'arrive pas à me connecter depuis hier. The password reset ne marche pas non plus, je ne reçois jamais l'email. Pouvez-vous m'aider? My username is jdupont.",
+      "expected_category": "account",
+      "ideal_summary": "Customer cannot log in and never receives the password reset email.",
+      "expected_difficulty": "hard",
+      "notes": "Mixed French/English email; tests multilingual robustness."
+    },
+    {
+      "id": "tc-044",
+      "input": "hi i cant acess my acount, the pasword reset dosnt work, tryed like 5 time. realy need to get in today pls help",
+      "expected_category": "account",
+      "ideal_summary": "Customer cannot access their account and the password reset is not working despite several attempts.",
+      "expected_difficulty": "hard",
+      "notes": "Heavy typos break keyword matching; tests robustness to misspellings."
+    },
+    {
+      "id": "tc-045",
+      "input": "my acont got lockd this mornin after my colegue tried loging in for me. can u unlok it? we hav a demo at 3pm",
+      "expected_category": "account",
+      "ideal_summary": "Customer's account was locked after a colleague's login attempts and they need it unlocked before a demo.",
+      "expected_difficulty": "hard",
+      "notes": "Heavy typos break keyword matching; tests robustness to misspellings."
+    },
+    {
+      "id": "tc-046",
+      "input": "I just wanted to say that Sarah from your support team went above and beyond helping us migrate last week. Please pass along our thanks!",
+      "expected_category": "general",
+      "ideal_summary": "Customer sends praise for a support agent's help during migration.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-047",
+      "input": "Would your team consider adding a calendar view to the planner? Our whole studio schedules visually and it would make the tool perfect for us.",
+      "expected_category": "general",
+      "ideal_summary": "Customer requests a calendar view feature for the planner.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-048",
+      "input": "I run a productivity newsletter with 30k readers and would like to discuss a partnership or affiliate arrangement. Who is the right person to talk to?",
+      "expected_category": "general",
+      "ideal_summary": "Newsletter owner inquires about a partnership or affiliate arrangement.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-049",
+      "input": "Before we roll this out to our legal team: where is customer data stored geographically, and do you have a copy of your data privacy policy you can send?",
+      "expected_category": "general",
+      "ideal_summary": "Customer asks where data is stored and requests the data privacy policy.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-050",
+      "input": "Is there a public roadmap somewhere? We're deciding between you and a competitor and the direction of the product over the next year matters to us.",
+      "expected_category": "general",
+      "ideal_summary": "Prospective customer asks whether a public product roadmap exists.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-051",
+      "input": "I'm a journalist at TechDaily writing a piece on remote collaboration tools. Would someone from your leadership be available for a short interview this month?",
+      "expected_category": "general",
+      "ideal_summary": "Journalist requests an interview with company leadership for an article.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-052",
+      "input": "Where can I find the developer documentation for your public API? The link in the footer of your docs hub seems to point to an old version.",
+      "expected_category": "general",
+      "ideal_summary": "Customer asks where to find current developer documentation for the public API.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-053",
+      "input": "Will your team be at the ProductWorld conference in Berlin this fall? We'd love to stop by your booth and chat about our use case.",
+      "expected_category": "general",
+      "ideal_summary": "Customer asks whether the company will attend an upcoming conference.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-054",
+      "input": "A small suggestion: the onboarding tour skips the permissions settings entirely, which confused our new hires. Might be worth adding a step there.",
+      "expected_category": "general",
+      "ideal_summary": "Customer suggests adding a permissions step to the onboarding tour.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-055",
+      "input": "Does the enterprise plan include audit logs and priority support? The comparison table on your pricing page doesn't mention either.",
+      "expected_category": "general",
+      "ideal_summary": "Customer asks whether the enterprise plan includes audit logs and priority support.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-056",
+      "input": "Just wanted to send a quick thank you: the issue I wrote about last week was resolved quickly and the follow-up was very professional.",
+      "expected_category": "general",
+      "ideal_summary": "Customer thanks the team for quickly resolving a previous issue.",
+      "expected_difficulty": "easy",
+      "notes": ""
+    },
+    {
+      "id": "tc-057",
+      "input": "Hi there, I teach a university course on project management and I'd like my students (about 60 of them) to use your tool for a semester-long group assignment. Do you have an education program, and if not, who could I discuss classroom use with? I'm flexible on timing, the semester starts in September.",
+      "expected_category": "general",
+      "ideal_summary": "University teacher asks about an education program for classroom use by 60 students.",
+      "expected_difficulty": "medium",
+      "notes": "Long, polite, no product problem; tests that verbosity alone doesn't shift the category."
+    },
+    {
+      "id": "tc-058",
+      "input": "We publish an annual report on tools used by design agencies and your product came up in 40% of our interviews this year, up from 12% last year. We'd like to feature you in a case study section. Could someone from marketing get in touch? Happy to share last year's edition so you can see the format.",
+      "expected_category": "general",
+      "ideal_summary": "Publisher wants to feature the product in a case study and asks for a marketing contact.",
+      "expected_difficulty": "medium",
+      "notes": "Business-development request wrapped in statistics; still general."
+    },
+    {
+      "id": "tc-059",
+      "input": "Some honest feedback after six months of daily use. The core workflow is excellent and our team is faster than ever. But the color scheme of the new theme strains the eyes during long sessions, and the icon redesign made several actions harder to find. None of this is blocking us, we just care about the product and want it to stay great.",
+      "expected_category": "general",
+      "ideal_summary": "Long-time customer shares UI feedback about the new theme's colors and icon redesign.",
+      "expected_difficulty": "medium",
+      "notes": "Detailed opinion piece with no action request; should stay general, not technical."
+    },
+    {
+      "id": "tc-060",
+      "input": "My cofounder and I are researching how SaaS companies structure their customer success teams as they scale. Since you've grown so much recently, would anyone on your team be open to a 20-minute chat about how you organize support? Totally fine if not, we know it's an unusual request.",
+      "expected_category": "general",
+      "ideal_summary": "Founder requests a short chat about how the company structures its customer success team.",
+      "expected_difficulty": "medium",
+      "notes": "Unusual research request; nothing to fix or change, clearly general."
+    }
+  ]
+}
