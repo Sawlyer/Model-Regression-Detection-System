@@ -67,8 +67,14 @@ class MockProvider:
         if "DEGRADED" in system:
             category = "general"
         else:
+            # Only match keywords inside the email body, not the JSON-format
+            # instructions (which mention every category name).
+            email = user
+            if "Email:" in email:
+                email = email.split("Email:", 1)[1]
+            email = email.split("Respond with", 1)[0]
             category = "general"
-            lowered = user.lower()
+            lowered = email.lower()
             for cat, pattern in _KEYWORDS:
                 if re.search(pattern, lowered):
                     category = cat
