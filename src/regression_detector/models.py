@@ -11,6 +11,8 @@ from pydantic import BaseModel, Field
 
 
 class Category(str, Enum):
+    """The four support-email buckets the classifier must choose from."""
+
     BILLING = "billing"
     TECHNICAL = "technical"
     ACCOUNT = "account"
@@ -18,6 +20,8 @@ class Category(str, Enum):
 
 
 class FewShotExample(BaseModel):
+    """One labelled example embedded in a prompt to steer the classifier."""
+
     email: str
     category: Category
     summary: str
@@ -34,11 +38,14 @@ class PromptConfig(BaseModel):
 
     @classmethod
     def from_yaml(cls, path: Path) -> "PromptConfig":
+        """Load and validate a prompt config from a YAML file."""
         with open(path, encoding="utf-8") as f:
             return cls.model_validate(yaml.safe_load(f))
 
 
 class TestCase(BaseModel):
+    """One human-labelled golden case: an email plus its ground-truth answer."""
+
     __test__ = False  # tell pytest this is not a test class
 
     id: str
@@ -50,16 +57,22 @@ class TestCase(BaseModel):
 
 
 class GoldenDataset(BaseModel):
+    """A versioned collection of golden test cases — the evaluation ground truth."""
+
     version: str
     cases: list[TestCase]
 
 
 class ClassifierOutput(BaseModel):
+    """The structured result the classifier returns for one email."""
+
     category: Category
     summary: str
 
 
 class CaseResult(BaseModel):
+    """The scored outcome of running one golden case through the pipeline."""
+
     case_id: str
     output: ClassifierOutput | None = None
     error: str | None = None
@@ -72,6 +85,8 @@ class CaseResult(BaseModel):
 
 
 class EvalRun(BaseModel):
+    """A complete eval of one prompt over the dataset, with aggregate metrics."""
+
     run_id: str
     prompt_version: str
     model: str
@@ -85,12 +100,16 @@ class EvalRun(BaseModel):
 
 
 class RunStatus(str, Enum):
+    """Verdict of a run-to-run diff: acceptable, warning, or merge-blocking."""
+
     OK = "ok"
     WARNING = "warning"
     CRITICAL = "critical"
 
 
 class CaseFlip(BaseModel):
+    """A case whose pass/fail state changed between two runs (regression or improvement)."""
+
     case_id: str
     input: str
     expected_category: Category
@@ -99,6 +118,8 @@ class CaseFlip(BaseModel):
 
 
 class DiffReport(BaseModel):
+    """The comparison of a run against its baseline: deltas, flips, and verdict."""
+
     baseline_run_id: str
     current_run_id: str
     pass_rate_delta: float

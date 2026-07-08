@@ -13,6 +13,11 @@ def aggregate(
     results: list[CaseResult],
     dataset: GoldenDataset,
 ) -> EvalRun:
+    """Roll per-case results into an EvalRun.
+
+    Computes overall pass rate, per-category accuracy, average judge score
+    (over non-null scores), average latency, and total token usage.
+    """
     total = len(results)
     passed = sum(r.passed for r in results)
     expected_by_id = {c.id: c.expected_category for c in dataset.cases}

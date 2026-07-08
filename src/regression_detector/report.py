@@ -126,6 +126,13 @@ def generate_report(
     warning_threshold: float = 0.03,
     critical_threshold: float = 0.08,
 ) -> Path:
+    """Render a standalone HTML report for `current` and write it to `out_path`.
+
+    `diff` is None for a baseline (first) run. `history` (newest-first) feeds the
+    trend chart, and `drift` is the ``(drifting, average)`` tuple from
+    detect_drift. The thresholds are shown so a reader knows what gated the
+    verdict. Returns the path written.
+    """
     drifting, drift_avg = drift
     status = diff.status.value if diff else "baseline"
     errored = sum(1 for r in current.results if r.error)

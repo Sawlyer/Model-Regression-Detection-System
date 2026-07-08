@@ -11,6 +11,13 @@ def compare(
     dataset: GoldenDataset,
     settings: Settings,
 ) -> DiffReport:
+    """Compare `current` against `baseline` and produce a DiffReport.
+
+    Identifies per-case flips (regressions = passed→failed, improvements =
+    failed→passed), per-category accuracy deltas, and the overall verdict:
+    a pass-rate drop past `critical_threshold` is CRITICAL, past
+    `warning_threshold` is WARNING, otherwise OK.
+    """
     cases_by_id = {c.id: c for c in dataset.cases}
     base_by_id = {r.case_id: r for r in baseline.results}
     curr_by_id = {r.case_id: r for r in current.results}

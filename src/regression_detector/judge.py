@@ -21,6 +21,11 @@ async def judge_summary(
     ideal_summary: str,
     actual_summary: str,
 ) -> tuple[int | None, int, int]:
+    """Ask the model to rate a candidate summary 1–5 against the ideal one.
+
+    Returns ``(score, tokens_in, tokens_out)`` where score is the first 1–5
+    digit found in the reply, or None if none is present.
+    """
     user = (
         f"Email:\n{email}\n\n"
         f"Ideal summary: {ideal_summary}\n"

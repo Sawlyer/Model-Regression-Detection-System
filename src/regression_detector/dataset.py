@@ -8,6 +8,10 @@ from .models import GoldenDataset
 
 
 def load_dataset(path: Path) -> GoldenDataset:
+    """Load the golden dataset from JSON and validate it.
+
+    Raises ValueError if the dataset is empty or contains duplicate case IDs.
+    """
     with open(path, encoding="utf-8") as f:
         ds = GoldenDataset.model_validate(json.load(f))
     if not ds.cases:

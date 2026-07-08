@@ -9,6 +9,7 @@ _EMOJI = {RunStatus.OK: "✅", RunStatus.WARNING: "⚠️", RunStatus.CRITICAL: 
 
 
 def build_alert_text(diff: DiffReport, current: EvalRun, report_path: str) -> str:
+    """Render the plain-text alert used for the console and inside the Slack payload."""
     baseline_rate = current.pass_rate - diff.pass_rate_delta
     return (
         f"[{diff.status.value.upper()}] Eval run {current.run_id} "
@@ -21,6 +22,7 @@ def build_alert_text(diff: DiffReport, current: EvalRun, report_path: str) -> st
 
 
 def build_slack_payload(diff: DiffReport, current: EvalRun, report_path: str) -> dict:
+    """Build the Slack Block Kit payload: status header, headline numbers, report link."""
     emoji = _EMOJI[diff.status]
     baseline_rate = current.pass_rate - diff.pass_rate_delta
     return {

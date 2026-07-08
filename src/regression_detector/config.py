@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 
 @dataclass
 class Settings:
+    """Runtime configuration, populated from environment variables / a .env file."""
+
     openrouter_api_key: str | None = None
     openrouter_model: str | None = None
     slack_webhook_url: str | None = None
@@ -22,6 +24,11 @@ class Settings:
 
     @classmethod
     def load(cls, env_file: str | None = ".env") -> "Settings":
+        """Build Settings from the environment, optionally loading `env_file` first.
+
+        Pass ``env_file=None`` to read only the current process environment
+        (used by tests so they don't pick up a developer's local .env).
+        """
         if env_file:
             load_dotenv(env_file)
         return cls(

@@ -19,6 +19,12 @@ _BACKOFF_SECONDS = [1.0, 2.0]
 async def _run_case(
     provider: LLMProvider, cfg: PromptConfig, case: TestCase, sem: asyncio.Semaphore
 ) -> CaseResult:
+    """Classify + judge one case, bounded by the concurrency semaphore.
+
+    Retries transient failures with backoff up to _MAX_ATTEMPTS. A case that
+    still fails becomes an errored CaseResult (passed=False) — it never raises,
+    so one bad case cannot crash the whole run.
+    """
     async with sem:
         start = time.perf_counter()
         last_error: Exception | None = None
@@ -60,6 +66,11 @@ async def run_eval(
     settings: Settings,
     run_id: str | None = None,
 ) -> EvalRun:
+    """Evaluate `cfg` over the whole dataset concurrently and aggregate the result.
+
+    Cases run in parallel up to `settings.max_concurrency`. `run_id` defaults to
+    a UTC timestamp-based id when not supplied.
+    """
     now = datetime.now(timezone.utc)
     run_id = run_id or f"run-{now:%Y%m%d-%H%M%S}"
     sem = asyncio.Semaphore(settings.max_concurrency)

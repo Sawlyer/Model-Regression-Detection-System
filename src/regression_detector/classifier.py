@@ -23,6 +23,7 @@ _REPAIR_SUFFIX = (
 
 
 def build_user_message(email: str) -> str:
+    """Wrap a raw email with the JSON-output instruction sent as the user turn."""
     return (
         f"Email:\n{email}\n\n"
         'Respond with ONLY a JSON object: {"category": '
@@ -31,6 +32,7 @@ def build_user_message(email: str) -> str:
 
 
 def _build_system(cfg: PromptConfig) -> str:
+    """Assemble the system prompt: the configured text plus any few-shot examples."""
     parts = [cfg.system_prompt]
     for ex in cfg.few_shot:
         parts.append(
@@ -41,6 +43,10 @@ def _build_system(cfg: PromptConfig) -> str:
 
 
 def _parse(text: str) -> ClassifierOutput:
+    """Strip code fences and validate the model's text into a ClassifierOutput.
+
+    Raises ClassificationError if the text is not valid JSON matching the schema.
+    """
     cleaned = _FENCE_RE.sub("", text.strip()).strip()
     try:
         return ClassifierOutput.model_validate(json.loads(cleaned))
@@ -51,7 +57,12 @@ def _parse(text: str) -> ClassifierOutput:
 async def classify_email(
     provider: LLMProvider, cfg: PromptConfig, email: str
 ) -> tuple[ClassifierOutput, int, int]:
-    """Classify one email. One repair attempt on malformed output."""
+    """Classify one email into a category + summary.
+
+    Makes one call; if the reply is not valid structured output, makes a single
+    repair call. Returns ``(output, tokens_in, tokens_out)`` with tokens summed
+    across every attempt. Raises ClassificationError if the repair also fails.
+    """
     system = _build_system(cfg)
     user = build_user_message(email)
 

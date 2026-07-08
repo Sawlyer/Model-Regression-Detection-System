@@ -24,6 +24,7 @@ _CRITICAL_EXIT = 2
 
 
 def _make_provider(settings: Settings, mock: bool):
+    """Choose a provider: the mock when forced or when no API key is configured."""
     if mock or not settings.openrouter_api_key:
         if not mock:
             typer.echo("No OPENROUTER_API_KEY found — falling back to MockProvider.")
